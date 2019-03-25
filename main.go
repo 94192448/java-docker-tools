@@ -11,7 +11,7 @@ func main() {
 	http.HandleFunc("/uploadMore", docker.UploadMore)
 	http.HandleFunc("/uploadOne", docker.UploadOne)
 
-	http.HandleFunc("/test", docker.Test)
+	http.HandleFunc("/test", docker.TestOne)
 
 	http.Handle("/websocket", websocket.Handler(docker.Echo))
 	http.HandleFunc("/web", docker.Web)

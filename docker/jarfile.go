@@ -9,9 +9,9 @@ import (
 	"os"
 )
 
-func Test(w http.ResponseWriter, r *http.Request) {
+func TestOne(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("method", r.Method)
+	fmt.Println("test one method--", r.Method)
 
 }
 
