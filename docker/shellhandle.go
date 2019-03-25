@@ -1,8 +1,10 @@
 package docker
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os/exec"
@@ -21,8 +23,12 @@ func ExecShell(writer http.ResponseWriter, request *http.Request) {
 	fmt.Printf("%s", out.String())
 }
 
-func BuildDockerImages(writer http.ResponseWriter, request *http.Request) bool {
-	command := `./jar-to-docker.sh .`
+func BuildDockerImages(appName string, appVersion string) {
+	command := `./upload/jar-to-docker.sh `
+	command += appName
+	command += " " + appVersion
+
+	fmt.Print(command)
 
 	cmd := exec.Command("/bin/bash", "-c", command)
 
@@ -30,14 +36,12 @@ func BuildDockerImages(writer http.ResponseWriter, request *http.Request) bool {
 
 	if err != nil {
 		fmt.Println(err)
-		return false
 	}
 
 	cmd.Start()
 
 	reader := bufio.NewReader(stdout)
 
-	//实时循环读取输出流中的一行内容
 	for {
 		line, err2 := reader.ReadString('\n')
 		if err2 != nil || io.EOF == err2 {
@@ -47,19 +51,5 @@ func BuildDockerImages(writer http.ResponseWriter, request *http.Request) bool {
 	}
 
 	cmd.Wait()
-	return true
-
-	/*content, err := ioutil.ReadAll(stdout)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(string(content)) //输出ls命令查看到的内容*/
-
-	/*output, err := cmd.Output()
-	if err != nil {
-		fmt.Printf("Execute Shell:%s failed with error:%s", command, err.Error())
-		return
-	}
-	fmt.Printf("Execute Shell:%s finished with output:\n%s", command, string(output))*/
 
 }

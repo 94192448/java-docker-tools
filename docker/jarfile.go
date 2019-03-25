@@ -9,26 +9,29 @@ import (
 )
 
 func UploadOne(w http.ResponseWriter, r *http.Request) {
-	//判断请求方式
+
 	if r.Method == "POST" {
 		//设置内存大小
 		r.ParseMultipartForm(32 << 20)
-		//获取上传的第一个文件
+
+		log.Print(r.FormValue("appName"))
+
 		file, header, err := r.FormFile("file")
 		defer file.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
-		//创建上传目录
 		os.Mkdir("./upload", os.ModePerm)
-		//创建上传文件
+
 		cur, err := os.Create("./upload/" + header.Filename)
 		defer cur.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
-		//把上传文件数据拷贝到我们新建的文件
 		io.Copy(cur, file)
+
+		BuildDockerImages(r.FormValue("appName"), r.FormValue("appVersion"))
+
 	} else {
 		//解析模板文件
 		t, _ := template.ParseFiles("./uploadOne.html")
