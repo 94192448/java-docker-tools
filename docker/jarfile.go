@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"fmt"
 	log "github.com/cihub/seelog"
 	"html/template"
 	"io"
@@ -9,6 +10,8 @@ import (
 )
 
 func UploadOne(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("method", r.Method)
 
 	if r.Method == "POST" {
 		//设置内存大小
@@ -27,6 +30,8 @@ func UploadOne(w http.ResponseWriter, r *http.Request) {
 			log.Error(err)
 		}
 		io.Copy(cur, file)
+
+		fmt.Print("upload one end...")
 
 		BuildDockerImages(r.FormValue("appName"), r.FormValue("appVersion"))
 
