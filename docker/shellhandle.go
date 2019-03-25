@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	log "github.com/cihub/seelog"
 	"io"
-	"log"
 	"net/http"
 	"os/exec"
 )
@@ -18,7 +18,7 @@ func ExecShell(writer http.ResponseWriter, request *http.Request) {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	fmt.Printf("%s", out.String())
 }
@@ -35,7 +35,8 @@ func BuildDockerImages(appName string, appVersion string) {
 	stdout, err := cmd.StdoutPipe()
 
 	if err != nil {
-		fmt.Println(err)
+		//fmt.Println(err)
+		log.Error(err)
 	}
 
 	cmd.Start()
@@ -47,7 +48,8 @@ func BuildDockerImages(appName string, appVersion string) {
 		if err2 != nil || io.EOF == err2 {
 			break
 		}
-		fmt.Println(line)
+		//fmt.Println(line)
+		log.Info(line)
 	}
 
 	cmd.Wait()

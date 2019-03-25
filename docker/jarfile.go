@@ -1,9 +1,9 @@
 package docker
 
 import (
+	log "github.com/cihub/seelog"
 	"html/template"
 	"io"
-	"log"
 	"net/http"
 	"os"
 )
@@ -14,19 +14,17 @@ func UploadOne(w http.ResponseWriter, r *http.Request) {
 		//设置内存大小
 		r.ParseMultipartForm(32 << 20)
 
-		log.Print(r.FormValue("appName"))
-
 		file, header, err := r.FormFile("file")
 		defer file.Close()
 		if err != nil {
-			log.Fatal(err)
+			log.Error(err)
 		}
 		os.Mkdir("./upload", os.ModePerm)
 
 		cur, err := os.Create("./upload/" + header.Filename)
 		defer cur.Close()
 		if err != nil {
-			log.Fatal(err)
+			log.Error(err)
 		}
 		io.Copy(cur, file)
 
