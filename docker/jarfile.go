@@ -55,7 +55,7 @@ func UploadMore(w http.ResponseWriter, r *http.Request) {
 			file, err := files[i].Open()
 			defer file.Close()
 			if err != nil {
-				log.Fatal(err)
+				log.Error(err)
 			}
 			//创建上传目录
 			os.Mkdir("./upload", os.ModePerm)
@@ -63,7 +63,7 @@ func UploadMore(w http.ResponseWriter, r *http.Request) {
 			cur, err := os.Create("./upload/" + files[i].Filename)
 			defer cur.Close()
 			if err != nil {
-				log.Fatal(err)
+				log.Error(err)
 			}
 			io.Copy(cur, file)
 		}
