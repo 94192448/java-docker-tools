@@ -21,18 +21,39 @@ func ExecShell(writer http.ResponseWriter, request *http.Request) {
 	fmt.Printf("%s", out.String())
 }
 
-func BuildDockerImages(writer http.ResponseWriter, request *http.Request) {
+func BuildDockerImages(writer http.ResponseWriter, request *http.Request) bool {
 	command := `./jar-to-docker.sh .`
 
 	cmd := exec.Command("/bin/bash", "-c", command)
 
 	stdout, err := cmd.StdoutPipe()
+
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+
 	cmd.Start()
-	content, err := ioutil.ReadAll(stdout)
+
+	reader := bufio.NewReader(stdout)
+
+	//实时循环读取输出流中的一行内容
+	for {
+		line, err2 := reader.ReadString('\n')
+		if err2 != nil || io.EOF == err2 {
+			break
+		}
+		fmt.Println(line)
+	}
+
+	cmd.Wait()
+	return true
+
+	/*content, err := ioutil.ReadAll(stdout)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(string(content)) //输出ls命令查看到的内容
+	fmt.Println(string(content)) //输出ls命令查看到的内容*/
 
 	/*output, err := cmd.Output()
 	if err != nil {
