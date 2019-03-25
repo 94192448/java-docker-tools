@@ -9,12 +9,17 @@ import (
 	"os"
 )
 
+func Test(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("method", r.Method)
+
+}
+
 func UploadOne(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("method", r.Method)
 
 	if r.Method == "POST" {
-		//设置内存大小
 		r.ParseMultipartForm(32 << 20)
 
 		file, header, err := r.FormFile("file")
@@ -37,7 +42,7 @@ func UploadOne(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		//解析模板文件
-		t, _ := template.ParseFiles("./uploadOne.html")
+		t, _ := template.ParseFiles("./static/uploadOne.html")
 		//输出文件数据
 		t.Execute(w, nil)
 	}
