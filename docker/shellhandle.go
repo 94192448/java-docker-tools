@@ -30,7 +30,8 @@ func BuildDockerImages(appName string, appVersion string) {
 
 	fmt.Print(command)
 
-	cmd := exec.Command("/bin/bash", "-c", command)
+	//cmd := exec.Command("/bin/bash", "-c", command)
+	cmd := exec.Command(command)
 
 	stdout, err := cmd.StdoutPipe()
 
@@ -48,7 +49,7 @@ func BuildDockerImages(appName string, appVersion string) {
 		if err2 != nil || io.EOF == err2 {
 			break
 		}
-		//fmt.Println(line)
+		fmt.Println(line)
 		log.Info(line)
 	}
 
