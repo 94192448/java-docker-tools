@@ -36,7 +36,7 @@ func UploadOne(w http.ResponseWriter, r *http.Request) {
 		}
 		io.Copy(cur, file)
 
-		fmt.Print("upload one end...")
+		fmt.Println("upload one end...")
 
 		BuildDockerImages(r.FormValue("appName"), r.FormValue("appVersion"))
 

@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	log "github.com/cihub/seelog"
 	"io"
+	"log"
 	"net/http"
 	"os/exec"
 	"strings"
@@ -19,13 +19,14 @@ func ExecShell(writer http.ResponseWriter, request *http.Request) {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		log.Error(err)
+		log.Fatal(err)
 	}
 	fmt.Printf("%s", out.String())
 }
 
 func BuildDockerImages(appName string, appVersion string) {
-	command := "./upload/jar-to-docker.sh "
+	//command := "./upload/jar-to-docker.sh "
+	command := "jar-to-docker.sh "
 	command += strings.ToLower(appName)
 	command += " " + strings.ToLower(appVersion)
 
@@ -33,16 +34,19 @@ func BuildDockerImages(appName string, appVersion string) {
 
 	//cmd := exec.Command("/bin/bash", "-c", command)
 	cmd := exec.Command(command)
+	//cmd := exec.Command("test.bat")
+
+	fmt.Println(cmd.Args)
 
 	stdout, err := cmd.StdoutPipe()
-	fmt.Println("exec end")
 
 	if err != nil {
 		fmt.Println(err)
-		log.Error(err)
+		log.Fatal(err)
 	}
-
-	cmd.Start()
+	if err := cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
 
 	reader := bufio.NewReader(stdout)
 
@@ -53,9 +57,7 @@ func BuildDockerImages(appName string, appVersion string) {
 			break
 		}
 		fmt.Println(line)
-		log.Info(line)
 	}
-	fmt.Println("exec println end")
 
 	cmd.Wait()
 
