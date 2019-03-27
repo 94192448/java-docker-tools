@@ -25,15 +25,14 @@ func ExecShell(writer http.ResponseWriter, request *http.Request) {
 }
 
 func BuildDockerImages(appName string, appVersion string) {
-	//command := "./upload/jar-to-docker.sh "
-	command := "jar-to-docker.sh "
+	command := "./upload/jar-to-docker.sh "
 	command += strings.ToLower(appName)
 	command += " " + strings.ToLower(appVersion)
 
 	fmt.Println("Starting exec-> " + command)
 
-	//cmd := exec.Command("/bin/bash", "-c", command)
-	cmd := exec.Command(command)
+	cmd := exec.Command("/bin/bash", "-c", command)
+	//cmd := exec.Command(command)
 	//cmd := exec.Command("test.bat")
 
 	fmt.Println(cmd.Args)
