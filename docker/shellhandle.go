@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os/exec"
+	"strings"
 )
 
 func ExecShell(writer http.ResponseWriter, request *http.Request) {
@@ -25,16 +26,16 @@ func ExecShell(writer http.ResponseWriter, request *http.Request) {
 
 func BuildDockerImages(appName string, appVersion string) {
 	command := "./upload/jar-to-docker.sh "
-	command += appName
-	command += " " + appVersion
+	command += strings.ToLower(appName)
+	command += " " + strings.ToLower(appVersion)
 
 	fmt.Println("Starting exec-> " + command)
 
 	//cmd := exec.Command("/bin/bash", "-c", command)
 	cmd := exec.Command(command)
 
-	fmt.Println("exec end")
 	stdout, err := cmd.StdoutPipe()
+	fmt.Println("exec end")
 
 	if err != nil {
 		fmt.Println(err)
@@ -48,11 +49,13 @@ func BuildDockerImages(appName string, appVersion string) {
 	for {
 		line, err2 := reader.ReadString('\n')
 		if err2 != nil || io.EOF == err2 {
+			fmt.Println(err2)
 			break
 		}
 		fmt.Println(line)
 		log.Info(line)
 	}
+	fmt.Println("exec println end")
 
 	cmd.Wait()
 
