@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang.org/x/net/websocket"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -31,14 +32,16 @@ func Echo(ws *websocket.Conn) {
 
 		fmt.Println("send to client:" + msg)
 
-		//这里是发送消息
+		for !runEnd {
+			if runMsg != "" {
+				if err = websocket.Message.Send(ws, runMsg); err != nil {
+					//fmt.Println("send failed:", err)
+				}
+			}
+		}
 
-		if err = websocket.Message.Send(ws, msg); err != nil {
-
-			fmt.Println("send failed:", err)
-
-			break
-
+		if runEnd {
+			log.Println("Is running end:", runEnd)
 		}
 
 	}

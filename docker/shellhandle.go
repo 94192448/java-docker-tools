@@ -24,18 +24,18 @@ func ExecShell(writer http.ResponseWriter, request *http.Request) {
 	fmt.Printf("%s", out.String())
 }
 
-func BuildDockerImages(appName string, appVersion string) {
-	command := "./upload/jar-to-docker.sh "
-	command += strings.ToLower(appName)
-	command += " " + strings.ToLower(appVersion)
+var runMsg = ""
+var runEnd = false
 
-	fmt.Println("Starting exec-> " + command)
+func BuildDockerImages(appName string, appVersion string) {
+	runEnd = false
+
+	command := "./upload/jar-to-docker.sh " + strings.ToLower(appName) + " " + strings.ToLower(appVersion)
 
 	cmd := exec.Command("/bin/bash", "-c", command)
-	//cmd := exec.Command(command)
 	//cmd := exec.Command("test.bat")
 
-	fmt.Println(cmd.Args)
+	log.Println("Starting exec-> ", command, cmd.Args)
 
 	stdout, err := cmd.StdoutPipe()
 
@@ -44,7 +44,7 @@ func BuildDockerImages(appName string, appVersion string) {
 		log.Fatal(err)
 	}
 	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
+		log.Fatal("start error:", err)
 	}
 
 	reader := bufio.NewReader(stdout)
@@ -52,12 +52,13 @@ func BuildDockerImages(appName string, appVersion string) {
 	for {
 		line, err2 := reader.ReadString('\n')
 		if err2 != nil || io.EOF == err2 {
-			fmt.Println(err2)
+			log.Println("reader error:", err2.Error())
 			break
 		}
-		fmt.Println(line)
+		runMsg = line
 	}
 
 	cmd.Wait()
 
+	runEnd = true
 }
