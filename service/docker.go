@@ -1,4 +1,4 @@
-package docker
+package service
 
 import (
 	"fmt"
@@ -12,40 +12,31 @@ func Echo(ws *websocket.Conn) {
 
 	var err error
 
-	for {
+	var reply string
 
-		var reply string
+	if err = websocket.Message.Receive(ws, &reply); err != nil {
 
-		//websocket接受信息
+		fmt.Println("receive failed:", err)
 
-		if err = websocket.Message.Receive(ws, &reply); err != nil {
-
-			fmt.Println("receive failed:", err)
-
-			break
-
-		}
-
-		fmt.Println("reveived from client: " + reply)
-
-		msg := "received:" + reply
-
-		fmt.Println("send to client:" + msg)
-
-		for !runEnd {
-			if runMsg != "" {
-				if err = websocket.Message.Send(ws, runMsg); err != nil {
-					//fmt.Println("send failed:", err)
-				}
-			}
-		}
-
-		if runEnd {
-			log.Println("Is running end:", runEnd)
-		}
+		return
 
 	}
 
+	fmt.Println("reveived from client: " + reply)
+
+	msg := "received:" + reply
+
+	fmt.Println("send to client:" + msg)
+
+	for {
+		if runMsg != "" {
+			if err = websocket.Message.Send(ws, runMsg); err != nil {
+				log.Println("send failed:", err)
+			}
+			runMsg = ""
+		}
+	}
+	log.Println("websocket end...")
 }
 
 func Web(w http.ResponseWriter, r *http.Request) {

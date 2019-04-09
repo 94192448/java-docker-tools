@@ -1,4 +1,4 @@
-package docker
+package service
 
 import (
 	"bufio"
@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 func ExecShell(writer http.ResponseWriter, request *http.Request) {
@@ -25,15 +26,13 @@ func ExecShell(writer http.ResponseWriter, request *http.Request) {
 }
 
 var runMsg = ""
-var runEnd = false
 
 func BuildDockerImages(appName string, appVersion string) {
-	runEnd = false
 
 	command := "./upload/jar-to-docker.sh " + strings.ToLower(appName) + " " + strings.ToLower(appVersion)
 
-	cmd := exec.Command("/bin/bash", "-c", command)
-	//cmd := exec.Command("test.bat")
+	//cmd := exec.Command("/bin/bash", "-c", command)
+	cmd := exec.Command("test.bat")
 
 	log.Println("Starting exec-> ", command, cmd.Args)
 
@@ -52,13 +51,18 @@ func BuildDockerImages(appName string, appVersion string) {
 	for {
 		line, err2 := reader.ReadString('\n')
 		if err2 != nil || io.EOF == err2 {
-			log.Println("reader error:", err2.Error())
+			log.Println("end of the reader error:", err2.Error())
 			break
 		}
-		runMsg = line
+		if line != "" {
+			runMsg = time.Now().Format("2006-01-02 15:04:05") + " " + line
+			log.Println(runMsg)
+			time.Sleep(1 * time.Second)
+		}
 	}
 
-	cmd.Wait()
+	time.Sleep(500 * time.Millisecond)
+	runMsg = time.Now().Format("2006-01-02 15:04:05") + " " + "Success created docker images...\n"
 
-	runEnd = true
+	cmd.Wait()
 }

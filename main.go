@@ -1,20 +1,20 @@
 package main
 
 import (
-	"github.com/94192448/java-docker-tools/docker"
+	"github.com/94192448/java-docker-tools/service"
 	"golang.org/x/net/websocket"
 	"log"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/uploadMore", docker.UploadMore)
-	http.HandleFunc("/uploadOne", docker.UploadOne)
+	http.HandleFunc("/uploadMore", service.UploadMore)
+	http.HandleFunc("/uploadOne", service.UploadOne)
 
-	http.HandleFunc("/test", docker.TestOne)
+	http.HandleFunc("/test", service.TestOne)
 
-	http.Handle("/websocket", websocket.Handler(docker.Echo))
-	http.HandleFunc("/web", docker.Web)
+	http.Handle("/websocket", websocket.Handler(service.Echo))
+	http.HandleFunc("/web", service.Web)
 
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 

@@ -31,7 +31,5 @@ window.onload = function() {
 function send() {
 
     var msg = document.getElementById('message').value;
-
     sock.send(msg);
-
 };

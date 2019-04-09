@@ -1,4 +1,4 @@
-package docker
+package service
 
 import (
 	"fmt"
@@ -41,7 +41,7 @@ func UploadOne(w http.ResponseWriter, r *http.Request) {
 		BuildDockerImages(r.FormValue("appName"), r.FormValue("appVersion"))
 
 	} else {
-		t, _ := template.ParseFiles("./static/uploadOne.html")
+		t, _ := template.ParseFiles("./static/index.html")
 		t.Execute(w, nil)
 	}
 }

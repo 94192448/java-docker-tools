@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JAR转docker镜像K8S运行</title>
+    <script src="/jquery-3.3.0.min.js"></script>
+    <link rel="stylesheet" href="/bootstrap-4.1.0.min.css">
+    <script>
+        $(document).ready(function(){
+            var scheme = document.location.protocol == "https:" ? "wss" : "ws";
+            var port = document.location.port ? (":" + document.location.port) : "";
+            var wsURL = scheme + "://" + document.location.hostname + port+"/websocket";
+            var sock = null;
+            //var wsuri = "ws://127.0.0.1:9090/websocket";
+            console.log("onload");
+            sock = new WebSocket(wsURL);
+            sock.onopen = function() {
+
+                console.log("connected to " +wsURL);
+
+            }
+            sock.onclose = function(e) {
+
+                console.log("connection closed (" + e.code + ")");
+
+            }
+
+            sock.onmessage = function(e) {
+                console.log("message received: " + e.data);
+                $("#logs").val(e.data+$("#logs").val()+"\n");
+            }
+
+            $("#fileBtn").click(function () {
+                if ($('#file').val()==""){
+                    alert("选择上传文件");
+                    return;
+                }
+                $("#logs").val("开始上传文件...");
+                var formData = new FormData();
+                formData.append('file', $('#file')[0].files[0]);
+                formData.append('appName',$('#appName').val());
+                formData.append('appVersion',$('#appVersion').val());
+                sock.send("Start...");
+                $.ajax({
+                    type: "POST",
+                    url: "/uploadOne",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    success: function(result) {
+                        $('#file').val("");
+                    },
+                    error: function(error) {
+                        $('#file').val("");
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body ng-app="dockerApp" ng-controller="siteCtrl">
+<div class="container">
+    <h2>S1. 上传JAR生成docker镜像</h2>
+    <form>
+        <div class="form-group">
+            <label for="email">选择可运行jar文件:</label>
+            <input type="file" id="file" ng-model="file" class="form-control" id="email">
+        </div>
+        <div class="form-group">
+            <label for="pwd">应用名称:</label>
+            <input type="text" id="appName"  required class="form-control" id="pwd" placeholder="英文应用名称" value="yourappname">
+        </div>
+        <div class="form-group">
+            <label for="appVersion">应用版本:</label>
+            <input type="text" id="appVersion"  required class="form-control" id="appVersion"  placeholder="应用版本" value="1.0.0">
+        </div>
+        <button type="button" id="fileBtn" class="btn btn-primary">开始上传</button>
+        <div class="form-group">
+            <label for="logs">运行日志:</label>
+            <textarea id="logs" class="form-control" rows="5"></textarea>
+            <label class="alert alert-warning"><a href="http://192.168.251.157:1180/harbor/projects/13/repositories" target="_blank">成功后可点击查看镜像</a>   apps/Apps123123</label>
+        </div>
+    </form>
+    <h2>S2. k8s集群运行docker镜像</h2>
+    <ul class="list-group">
+        <li class="list-group-item list-group-item-info"><a href="https://192.168.251.157" target="_blank">登录rancher</a>  账号/密码: dev/dev123123</li>
+        <li class="list-group-item"><img class="img-fluid" src="/img/s1.png"></li>
+        <li class="list-group-item list-group-item-info">启动镜像  如： 192.168.251.157:1180/apps/test:1.0.0</li>
+        <li class="list-group-item"><img class="img-fluid" src="/img/s2.png"></li>
+        <li class="list-group-item list-group-item-info">访问服务</li>
+        <li class="list-group-item"><img class="img-fluid" src="/img/s3.png"></li>
+    </ul>
+</div>
+</body>
+</html>
