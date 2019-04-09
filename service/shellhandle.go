@@ -31,8 +31,8 @@ func BuildDockerImages(appName string, appVersion string) {
 
 	command := "./upload/jar-to-docker.sh " + strings.ToLower(appName) + " " + strings.ToLower(appVersion)
 
-	//cmd := exec.Command("/bin/bash", "-c", command)
-	cmd := exec.Command("test.bat")
+	cmd := exec.Command("/bin/bash", "-c", command)
+	//cmd := exec.Command("test.bat")
 
 	log.Println("Starting exec-> ", command, cmd.Args)
 
